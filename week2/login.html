@@ -72,7 +72,7 @@
                             document.cookie = `jillsCookie=${token}; expires=${expired};`;
                             location.assign("./products.html");
                         }).catch((err) => {
-                            console.log(err);
+                            alert(err.data?.error?.message ?? "登入發生錯誤");
                         })
                 }
             },

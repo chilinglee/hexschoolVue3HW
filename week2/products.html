@@ -49,21 +49,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="item in products" v-bind:key="item.id">
-                                <td width="150">{{ item.title }}</td>
+                            <tr v-for="product in products" v-bind:key="product.id">
+                                <td width="150">{{ product.title }}</td>
                                 <td width="120">
-                                    {{ item.origin_price }}
+                                    {{ product.origin_price }}
                                 </td>
                                 <td width="120">
-                                    {{ item.price }}
+                                    {{ product.price }}
                                 </td>
                                 <td width="150">
-                                    <span class="text-success" v-if="item.title">啟用</span>
-                                    <span v-else>未啟用</span>
+                                    {{product.is_enabled == 1?'啓用':'未啓用'}}
                                 </td>
                                 <td width="120">
                                     <button type="button" class="btn btn-primary"
-                                        v-on:click="tempProd = item">查看細節</button>
+                                        v-on:click="tempProd = product">查看細節</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -126,10 +125,12 @@
                 checkLogin() {
                     axios.post(`${url}api/user/check`).
                         then((res) => {
-                            console.log(res);
+                            alert("登入狀態OK");
+                            this.getProducts();
                         }).
                         catch((err) => {
-                            console.dir(err);
+                            alert("登入不正確，請再試一次。");
+                            location.assign("./login.html");
                         })
                 },
                 getProducts() {
@@ -146,7 +147,6 @@
             mounted() {
                 this.setCookie();
                 this.checkLogin();
-                this.getProducts();
             }
         }
         createApp(app).mount("#app");
