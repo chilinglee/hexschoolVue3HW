@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue 3 直播班 week 3 作業</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        img {
+            object-fit: contain;
+            max-width: 100%;
+        }
+
+        .primary-image {
+            height: 300px;
+        }
+
+        .images {
+            height: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="app">
+        <div class="container">
+            <div class="row py-3">
+                <div class="col-md-12">
+                    <div class="row">
+                        <h2 class="w-50">產品列表</h2>
+                        <button class="btn btn-primary w-25 ms-auto me-0" type="button"
+                            @click="showEditModal('')">新增產品</button>
+                    </div>
+                    <table class="table table-hover mt-4">
+                        <thead>
+                            <tr>
+                                <th width="150">分類</th>
+                                <th width="150">產品名稱</th>
+                                <th width="120">
+                                    原價
+                                </th>
+                                <th width="120">
+                                    售價
+                                </th>
+                                <th width="150">
+                                    是否啟用
+                                </th>
+                                <th width="120">
+                                    編輯刪除
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="product in products" v-bind:key="product.id">
+                                <td width="150">{{ product.category }}</td>
+                                <td width="150">{{ product.title }}</td>
+                                <td width="120">
+                                    {{ product.origin_price }}
+                                </td>
+                                <td width="120">
+                                    {{ product.price }}
+                                </td>
+                                <td width="150">
+                                    {{product.is_enabled == 1?'啓用':'未啓用'}}
+                                </td>
+                                <td width="120">
+                                    <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                        <button type="button" class="btn btn-outline-primary"
+                                            data-bs-target="#editModal" @click="showEditModal(product.id)">編輯</button>
+                                        <button type="button" class="btn btn-outline-danger"
+                                            @click="delProd(product.id)">刪除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>目前有 <span>{{ products.length }}</span> 項產品</p>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="editModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <label for="imageUrl" class="form-label">主要圖片</label>
+                                        <input type="text" class="form-control mb-2" id="imageUrl"
+                                            v-model.lazy="tempProd.imageUrl">
+                                        <img v-if="tempProd.imageUrl" :src="tempProd.imageUrl" alt="tempProd.title">
+                                        <label for="imagesUrl" class="form-label">其他圖片</label>
+                                        <input type="text" class="form-control" id="imagesUrl"
+                                            v-model.lazy="newImageUrl">
+                                        <button class="btn btn-primary my-2" type="button"
+                                            @click="addImageUrl">新增圖片</button>
+                                        <img class="my-2" v-for="(url,index) in tempProd.imagesUrl" :src="url"
+                                            alt="tempProd.title" :key="index">
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="row mb-3">
+                                            <label for="title" class="col-sm-2 col-form-label">品名</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="title"
+                                                    v-model="tempProd.title">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="category" class="col-sm-2 col-form-label">類別</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="category" name="category"
+                                                    v-model.trim="tempProd.category">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="origin_price" class="col-sm-2 col-form-label">原價</label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" id="origin_price" name="origin_price"
+                                                    type="number" v-model.number="tempProd.origin_price" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="price" class="col-sm-2 col-form-label">價格</label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" id="price" name="price" type="number"
+                                                    v-model.number="tempProd.price" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="unit" class="col-sm-2 col-form-label">單位</label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" id="unit" name="unit" type="text"
+                                                    v-model.trim="tempProd.unit" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="content" class="col-sm-2 col-form-label">内容</label>
+                                            <div class="col-sm-10">
+                                                <textarea class="form-control" id="content" name="content"
+                                                    v-model="tempProd.content"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="description" class="col-sm-2 col-form-label">説明</label>
+                                            <div class="col-sm-10">
+                                                <textarea class="form-control" id="description" name="description"
+                                                    v-model="tempProd.description"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <label for="is_enabled" class="col-sm-2 col-form-label">狀態</label>
+                                            <div class="col-sm-10">
+                                                <div class="form-check form-check-inline"
+                                                    style="padding-top: calc(.375rem + 1px);padding-bottom: calc(.375rem + 1px);">
+                                                    <input class="form-check-input" type="radio" name="is_enabled"
+                                                        id="is_enabled1" value="1" v-model.number="tempProd.is_enabled">
+                                                    <label class="form-check-label" for="is_enabled1">啓用</label>
+                                                </div>
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="is_enabled"
+                                                        id="is_enabled0" value="0" v-model.number="tempProd.is_enabled">
+                                                    <label class="form-check-label" for="is_enabled0">未啓用</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="saveData">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.9.1/axios.min.js'
+        integrity='sha512-Xk3wWei2TGrsh9kDSBKUMIjw/86sLUvhtnv9f7fOuIwhhiUTKz8szkWkzHthrM5Bb3Bu9idSzkxOrkzhcneuiw=='
+        crossorigin='anonymous'></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.cjs.js"
+        integrity="sha512-7m9S6PzUY75+/V5GIWRP19NFD1MgYpzbmbbSfUMnj8PMtkOj/XZs4BmxXvXku2litdO4qDrVhGtFkk2MVWlpcg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script type="module">
+        const url = "https://vue3-course-api.hexschool.io/v2/";
+        const path = "jillian-chilinglee";
+        let editModal = ''; //Modal 實體化
+        import { createApp } from 'https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.esm-browser.prod.min.js';
+        const app = {
+            data() {
+                return {
+                    products: [],
+                    tempProd: '',
+                    emptyProd:
+                    {
+                        category: "",
+                        content: "",
+                        description: "",
+                        id: "",
+                        is_enabled: "",
+                        origin_price: "",
+                        price: "",
+                        title: "",
+                        unit: "",
+                        num: "",
+                        imageUrl: "",
+                        imagesUrl: [
+                        ]
+                    },
+                    newImageUrl: ''
+                };
+            },
+            methods: {
+                setCookie() {
+                    const myCookie = document.cookie.replace(/(?:(?:^|.*;\s*)jillsCookie\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                    axios.defaults.headers.common['Authorization'] = myCookie;
+                },
+                checkLogin() {
+                    axios.post(`${url}api/user/check`).
+                        then((res) => {
+                            alert("登入狀態OK");
+                            this.getProducts();
+                        }).
+                        catch((err) => {
+                            alert("身份驗證發生問題，請再登入一次。");
+                            location.assign("./login.html");
+                        })
+                },
+                getProducts() {
+                    axios.get(`${url}api/${path}/admin/products/all`).
+                        then((res) => {
+                            //console.log(res);
+                            this.products = Object.values(res.data.products);
+                        }).
+                        catch((err) => {
+                            //console.dir(err);
+                            alert('取得產品發生錯誤，請稍後再試。');
+                        });
+                },
+                showEditModal(id) {
+                    if (id !== '') {
+                        //編輯舊產品
+                        this.tempProd = this.products.filter(x => x.id === id)[0];
+                    } else {
+                        //新增產品
+                        this.tempProd = JSON.parse(JSON.stringify(this.emptyProd));
+                    }
+                    editModal.show();
+                },
+                addImageUrl() {
+                    this.tempProd.imagesUrl.push(this.newImageUrl);
+                    this.newImageUrl = '';
+                },
+                saveData() {
+                    let prod = {
+                        data: this.tempProd
+                    };
+                    if (this.tempProd.id) {
+                        //更新產品
+                        axios.put(`${url}api/${path}/admin/product/${this.tempProd.id}`, prod)
+                            .then(res => {
+                                //console.dir(res);
+                                this.getProducts();
+                                alert('更新成功');
+                            }).catch(err => {
+                                //console.dir(err);
+                                alert(err.message);
+                            });
+                    } else {
+                        //新增產品
+                        axios.post(`${url}api/${path}/admin/product`, prod)
+                            .then(res => {
+                                this.getProducts();
+                                alert('新增成功');
+                            }).catch(err => {
+                                //console.dir(err);
+                                alert(err.data.message);
+                            });
+                    }
+                },
+                delProd(id) {
+                    if (id) {
+                        axios.delete(`${url}api/${path}/admin/product/${id}`)
+                            .then(res => {
+                                this.getProducts();
+                                alert('刪除成功');
+                            }).catch(err => {
+                                //console.dir(err);
+                                alert(err.data.message);
+                            });
+                    }
+                }
+            },
+            mounted() {
+                this.setCookie();
+                this.checkLogin();
+
+                //Modal 實體化
+                //待頁面完成渲染之後，才做實體化
+                editModal = new bootstrap.Modal(document.getElementById('editModal'));
+            }
+        };
+        createApp(app).mount("#app");
+
+        //upload products
+        // 產品資料格式
+        // let products = [
+        //     {
+        //         category: "甜甜圈",
+        //         content: "尺寸：14x14cm",
+        //         description: "濃郁的草莓風味，中心填入滑順不膩口的卡士達內餡，帶來滿滿幸福感！",
+        //         id: "-L9tH8jxVb2Ka_DYPwng",
+        //         is_enabled: 1,
+        //         origin_price: 150,
+        //         price: 99,
+        //         title: "草莓莓果夾心圈",
+        //         unit: "個",
+        //         num: 10,
+        //         imageUrl: "https://images.unsplash.com/photo-1583182332473-b31ba08929c8?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NzR8fGRvbnV0fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60",
+        //         imagesUrl: [
+        //             "https://images.unsplash.com/photo-1626094309830-abbb0c99da4a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2832&q=80",
+        //             "https://images.unsplash.com/photo-1559656914-a30970c1affd?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTY0fHxkb251dHxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60"
+        //         ]
+        //     },
+        //     {
+        //         category: "蛋糕",
+        //         content: "尺寸：6寸",
+        //         description: "蜜蜂蜜蛋糕，夾層夾上酸酸甜甜的檸檬餡，清爽可口的滋味讓人口水直流！",
+        //         id: "-McJ-VvcwfN1_Ye_NtVA",
+        //         is_enabled: 16,
+        //         origin_price: 1000,
+        //         price: 900,
+        //         title: "蜂蜜檸檬蛋糕",
+        //         unit: "個",
+        //         num: 1,
+        //         imageUrl: "https://images.unsplash.com/photo-1627834377411-8da5f4f09de8?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1001&q=80",
+        //         imagesUrl: [
+        //             "https://images.unsplash.com/photo-1618888007540-2bdead974bbb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=987&q=80",
+        //         ]
+        //     },
+        //     {
+        //         category: "蛋糕",
+        //         content: "尺寸：6寸",
+        //         description: "法式煎薄餅加上濃郁可可醬，呈現經典的美味及口感。",
+        //         id: "-McJ-VyqaFlLzUMmpPpm",
+        //         is_enabled: 1,
+        //         origin_price: 700,
+        //         price: 600,
+        //         title: "暗黑千層",
+        //         unit: "個",
+        //         num: 15,
+        //         imageUrl: "https://images.unsplash.com/photo-1505253149613-112d21d9f6a9?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDZ8fGNha2V8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60",
+        //         imagesUrl: [
+        //             "https://images.unsplash.com/flagged/photo-1557234985-425e10c9d7f1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTA5fHxjYWtlfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60",
+        //             "https://images.unsplash.com/photo-1540337706094-da10342c93d8?ixid=MnwxMjA3fDB8MHxzZWFyY2h8NDR8fGNha2V8ZW58MHx8MHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&q=60"
+        //         ]
+        //     }
+        // ];
+
+        // products.forEach((prod) => {
+        //     axios.post(`${url}api/${path}/admin/product`, { data: prod }).
+        //         then((res) => {
+        //             console.log(res);
+        //         }).
+        //         catch((err) => {
+        //             console.dir(err);
+        //         })
+        // });
+    </script>
+</body>
