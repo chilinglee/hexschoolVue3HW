@@ -86,7 +86,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <h5 class="modal-title" id="exampleModalLabel"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -103,8 +103,8 @@
                                             v-model.lazy="newImageUrl">
                                         <button class="btn btn-primary my-2" type="button"
                                             @click="addImageUrl">新增圖片</button>
-                                        <img class="my-2" v-for="(url,index) in tempProd.imagesUrl" :src="url"
-                                            alt="tempProd.title" :key="index">
+                                        <img class="my-2" v-for="url in tempProd.imagesUrl" :src="url"
+                                            alt="tempProd.title" :key="url">
                                     </div>
                                     <div class="col-7">
                                         <div class="row mb-3">
