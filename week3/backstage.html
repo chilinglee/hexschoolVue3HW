@@ -125,14 +125,14 @@
                                             <label for="origin_price" class="col-sm-2 col-form-label">原價</label>
                                             <div class="col-sm-10">
                                                 <input class="form-control" id="origin_price" name="origin_price"
-                                                    type="number" v-model.number="tempProd.origin_price" />
+                                                    type="number" v-model.number="tempProd.origin_price" min="0" />
                                             </div>
                                         </div>
                                         <div class="row mb-3">
                                             <label for="price" class="col-sm-2 col-form-label">價格</label>
                                             <div class="col-sm-10">
                                                 <input class="form-control" id="price" name="price" type="number"
-                                                    v-model.number="tempProd.price" />
+                                                    v-model.number="tempProd.price" min="0" />
                                             </div>
                                         </div>
                                         <div class="row mb-3">
@@ -281,6 +281,7 @@
                                 //console.dir(res);
                                 this.getProducts();
                                 alert('更新成功');
+                                editModal.hide();
                             }).catch(err => {
                                 //console.dir(err);
                                 alert(err.message);
