@@ -4,7 +4,7 @@ export default {
             newImageUrl: ''
         }
     },
-    props: ['tempProd', 'addImageUrl', 'saveData'],
+    props: ['tempProd', 'saveData'],
     template:
         `<div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
@@ -26,7 +26,7 @@ export default {
                                 <input type="text" class="form-control" id="imagesUrl"
                                     v-model.lazy="newImageUrl">
                                 <button class="btn btn-primary my-2" type="button"
-                                    @click="addImageUrl">新增圖片</button>
+                                    @click="addNewImgUrl">新增圖片</button>
                                 <img class="my-2" v-for="url in tempProd.imagesUrl" :src="url"
                                     alt="tempProd.title" :key="url">
                             </div>
@@ -109,8 +109,8 @@ export default {
         </div>
     </div>
         </div>`,
-    watch: {
-        newImageUrl() {
+    methods: {
+        addNewImgUrl() {
             this.$emit('addNewImgUrl', this.newImageUrl);
             this.newImageUrl = '';
         }

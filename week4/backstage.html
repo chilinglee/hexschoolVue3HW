@@ -83,7 +83,7 @@
                 </div>
             </div>
         </div>
-        <modal :temp-prod="tempProd" :add-image-url="addImageUrl" :save-data="saveData" @add-new-img-url="addImageUrl">
+        <modal :temp-prod="tempProd" :save-data="saveData" @add-new-img-url="addImageUrl">
         </modal>
     </section>
 
@@ -172,7 +172,7 @@
                     editModal.show();
                 },
                 addImageUrl(newUrl) {
-                    console.log(this.tempProd);
+                    //console.log(this.tempProd);
                     if (!this.tempProd.imagesUrl) {
                         this.tempProd.imagesUrl = [];
                     }
