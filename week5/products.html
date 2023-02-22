@@ -172,7 +172,8 @@
 
                     Promise.all([getProducts, getCartDetails]).
                         then(([prodRes, cartRes]) =>{
-                            this.products = prodRes.data.products;
+                            console.log(prodRes);
+                            this.products = prodRes.data.products.filter(x => x.is_enabled * 1 === 1 );
                             this.cartDetails = cartRes.data.data;
                         }).catch((err) => {
                             //console.dir(err);
