@@ -167,13 +167,13 @@
             methods: {
                 getData() {
                     this.loader = this.$loading.show();
+                    const getProducts = axios.get(`${url}/api/${path}/products/all`);
+                    const getCartDetails = axios.get(`${url}/api/${path}/cart`);
 
-                    axios.get(`${url}/api/${path}/products/all`).
-                        then(({ data }) => {
-                            this.products = data.products;
-                            return axios.get(`${url}/api/${path}/cart`);
-                        }).then(({ data }) => {
-                            this.cartDetails = data.data;
+                    Promise.all([getProducts, getCartDetails]).
+                        then(([prodRes, cartRes]) =>{
+                            this.products = prodRes.data.products;
+                            this.cartDetails = cartRes.data.data;
                         }).catch((err) => {
                             //console.dir(err);
                             alert('取得產品/購物車資訊有誤，請稍後再試。');
