@@ -5,6 +5,7 @@ export default {
   data() {
     return {
       cartDetails: {},
+      loader: '',
     };
   },
   template: `
@@ -93,32 +94,32 @@ export default {
               <label for="name" class="form-label">收件人姓名</label>
               <v-field
                 id="name"
-                name="姓名"
+                name="name"
                 type="text"
                 class="form-control"
-                :class="{ 'is-invalid': errors['姓名'] }"
+                :class="{ 'is-invalid': errors['name'] }"
                 placeholder="請輸入姓名"
                 rules="required"
               ></v-field>
               <error-message
-                name="姓名"
+                name="name"
                 class="invalid-feedback"
               ></error-message>
             </div>
 
             <div class="mb-3">
-              <label for="tel" class="form-label">收件人電話</label>
+              <label for="tel" class="form-label">收件人手機</label>
               <v-field
                 id="tel"
-                name="電話"
-                type="text"
+                name="phone"
+                type="tel"
                 class="form-control"
-                :class="{ 'is-invalid': errors['電話'] }"
-                placeholder="請輸入電話"
+                :class="{ 'is-invalid': errors['phone'] }"
+                placeholder="請輸入手機號碼: 09xxxxxxxx"
                 :rules="isPhone"
               ></v-field>
               <error-message
-                name="電話"
+                name="phone"
                 class="invalid-feedback"
               ></error-message>
             </div>
@@ -127,27 +128,24 @@ export default {
               <label for="address" class="form-label">收件人地址</label>
               <v-field
                 id="address"
-                name="地址"
+                name="address"
                 type="text"
                 class="form-control"
-                :class="{ 'is-invalid': errors['地址'] }"
+                :class="{ 'is-invalid': errors['address'] }"
                 placeholder="請輸入地址"
                 rules="required"
               ></v-field>
               <error-message
-                name="地址"
+                name="address"
                 class="invalid-feedback"
               ></error-message>
             </div>
 
             <div class="mb-3">
               <label for="message" class="form-label">留言</label>
-              <textarea
-                id="message"
-                class="form-control"
-                cols="30"
-                rows="10"
-              ></textarea>
+              <v-field v-slot="{ field }" name="message">
+    <textarea v-bind="field" name="message" id="message" class="form-control" cols="30" rows="10"/>
+  </v-field>
             </div>
             <div class="text-end">
               <button type="submit" class="btn btn-danger">送出訂單</button>
@@ -300,8 +298,25 @@ export default {
       const phoneNumber = /^(09)[0-9]{8}$/;
       return phoneNumber.test(value) ? true : '需要正確的電話號碼';
     },
-    onSubmit() {
-      alert('送出表單成功');
+    onSubmit(values, { resetForm }) {
+      if (this.cartDetails?.carts?.length) {
+        this.loader = this.$loading.show();
+        axios
+          .delete(`${url}/api/${path}/carts`)
+          .then((res) => {
+            alert('送出表單成功');
+          })
+          .catch((err) => {
+            //console.log(err);
+          })
+          .finally(() => {
+            this.loader.hide();
+            resetForm();
+            this.getCartData();
+          });
+      } else {
+        alert('請先加入購物車。');
+      }
     },
   },
   mounted() {
