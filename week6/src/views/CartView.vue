@@ -339,7 +339,7 @@ export default {
 
       <div class="mb-3">
         <label for="message" class="form-label">留言</label>
-        <v-field v-slot="{ field }" name="message" rules="required">
+        <v-field v-slot="{ field }" name="message">
           <textarea
             v-bind="field"
             name="message"
