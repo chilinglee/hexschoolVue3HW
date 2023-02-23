@@ -175,8 +175,25 @@ export default {
       const phoneNumber = /^(09)[0-9]{8}$/;
       return phoneNumber.test(value) ? true : "需要正確的電話號碼";
     },
-    onSubmit() {
-      alert("送出表單成功");
+    onSubmit(values, { resetForm }) {
+      if (this.cartDetails?.carts?.length) {
+        this.loader = this.$loading.show();
+        axios
+          .delete(`${url}/api/${path}/carts`)
+          .then((res) => {
+            alert("送出表單成功");
+          })
+          .catch((err) => {
+            //console.log(err);
+          })
+          .finally(() => {
+            this.loader.hide();
+            resetForm();
+            this.getCartData();
+          });
+      } else {
+        alert("請先加入購物車。");
+      }
     },
   },
   mounted() {
@@ -322,12 +339,16 @@ export default {
 
       <div class="mb-3">
         <label for="message" class="form-label">留言</label>
-        <textarea
-          id="message"
-          class="form-control"
-          cols="30"
-          rows="10"
-        ></textarea>
+        <v-field v-slot="{ field }" name="message" rules="required">
+          <textarea
+            v-bind="field"
+            name="message"
+            id="message"
+            class="form-control"
+            cols="30"
+            rows="10"
+          />
+        </v-field>
       </div>
       <div class="text-end">
         <button type="submit" class="btn btn-danger">送出訂單</button>
